@@ -208,3 +208,132 @@ class Plotter:
         plt.figure()
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
         self._finalize(title, "Predicted Label", "True Label")
+
+    def plot_scatter_with_overlays(self, data_dict, title=None, xlabel="Date", ylabel=None, figsize=(12, 6)):
+        """Plot scatter plot with multiple overlaid series."""
+        plt.figure(figsize=figsize)
+        
+        for label, (x_data, y_data, style) in data_dict.items():
+            if 'marker' in style:
+                plt.scatter(x_data, y_data, **style, label=label)
+            else:
+                plt.plot(x_data, y_data, **style, label=label)
+        
+        plt.legend()
+        plt.xticks(rotation=45)
+        self._finalize(title or "Scatter Plot with Overlays", xlabel, ylabel)
+
+    def plot_outlier_scatter_subplots(self, data_dict, title=None, figsize=(15, 10)):
+        """Plot scatter plots with outliers highlighted in subplots."""
+        n_plots = len(data_dict)
+        n_cols = 2
+        n_rows = (n_plots + 1) // n_cols
+
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize)
+        
+        # Handle the axes indexing properly
+        if n_rows == 1:
+            axes = axes.flatten()  # Make it 1D array
+        else:
+            axes = axes.flatten()  # Flatten 2D array to 1D
+
+        for i, (ticker, (returns, outliers, extreme_returns)) in enumerate(data_dict.items()):
+            ax = axes[i]
+
+            # Plot returns with outliers highlighted
+            ax.scatter(returns.index, returns.values, alpha=0.6, s=1, color='blue', label='Normal returns')
+            
+            # Highlight outliers
+            if len(outliers) > 0:
+                ax.scatter(outliers.index, outliers.values, color='red', s=20, label='Outliers (z>3)')
+            
+            # Highlight extreme returns
+            if len(extreme_returns) > 0:
+                ax.scatter(extreme_returns.index, extreme_returns.values, color='orange', s=15, marker='x', label='Extreme (>5%)')
+            
+            ax.set_title(f'{ticker} Daily Returns with Outliers')
+            ax.set_ylabel('Daily Return')
+            ax.legend()
+            ax.tick_params(axis='x', rotation=45)
+
+        plt.tight_layout()
+        if title:
+            filename = f"{self._slugify(title)}.png"
+            out_path = self.figures_dir / filename
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            plt.savefig(out_path, dpi=300)
+        plt.show()
+        plt.close()
+
+    def plot_multi_line_time_series(self, data_dict, title=None, xlabel="Date", ylabel=None):
+        """Plot multiple time series lines on the same chart."""
+        plt.figure(figsize=(12, 6))
+        for label, series in data_dict.items():
+            if isinstance(series, pd.Series):
+                plt.plot(series.index, series.values, label=label, alpha=0.8)
+            else:
+                # Assume it's a DataFrame with date index
+                plt.plot(series.index, series.values, label=label, alpha=0.8)
+
+        plt.legend()
+        plt.xticks(rotation=45)
+        self._finalize(title or "Multi-Line Time Series", xlabel, ylabel)
+
+    def plot_seasonal_decomposition(self, decomposition, title_prefix="TSLA"):
+        """Plot seasonal decomposition with 4 subplots."""
+        plt.figure(figsize=(12, 8))
+
+        plt.subplot(411)
+        plt.plot(decomposition.observed)
+        plt.title(f'{title_prefix} Observed')
+
+        plt.subplot(412)
+        plt.plot(decomposition.trend)
+        plt.title('Trend')
+
+        plt.subplot(413)
+        plt.plot(decomposition.seasonal)
+        plt.title('Seasonal')
+
+        plt.subplot(414)
+        plt.plot(decomposition.resid)
+        plt.title('Residual')
+
+        self._finalize(f"{title_prefix} Seasonal Decomposition", "Date", None)
+
+    def plot_multi_bar_comparison(self, data_dict, title=None, xlabel=None, ylabel=None, figsize=(15, 10)):
+        """Plot multiple bar charts in a grid layout."""
+        n_plots = len(data_dict)
+        n_cols = 2
+        n_rows = (n_plots + 1) // n_cols
+
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize)
+        if n_rows == 1:
+            axes = axes.reshape(1, -1)
+
+        colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown']
+
+        for i, (metric_name, values) in enumerate(data_dict.items()):
+            row = i // n_cols
+            col = i % n_cols
+
+            if n_rows == 1 and n_cols == 1:
+                ax = axes
+            elif n_rows == 1:
+                ax = axes[col]
+            else:
+                ax = axes[row, col]
+
+            ax.bar(values.index, values.values, color=colors[:len(values)])
+            ax.set_title(metric_name)
+            ax.set_ylabel(ylabel or metric_name)
+            ax.tick_params(axis='x', rotation=45)
+
+        plt.tight_layout()
+        if title:
+            filename = f"{self._slugify(title)}.png"
+            out_path = self.figures_dir / filename
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            plt.savefig(out_path, dpi=300)
+        plt.show()
+        plt.close()
