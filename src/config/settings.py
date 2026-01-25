@@ -1,4 +1,4 @@
-"""Central configuration for the insurance risk analytics project."""
+"""Central configuration for the financial portfolio forecasting project."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    project_name: str = "Complaint Analysis RAG"
+    project_name: str = "Financial Portfolio Forecasting"
 
     # Base paths
     root_dir: Path = Path(__file__).resolve().parents[2]
@@ -18,21 +18,34 @@ class Settings(BaseSettings):
     figures_dir: Path = outputs_dir / "figures"
     reports_dir: Path = outputs_dir / "reports"
 
-    # File names
-    raw_data_file: str = "complaints.csv"
-    processed_data_file: str = "filtered_complaints.csv"
-    
-    # Model Config
-    embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
-    llm_model_name: str = "google/flan-t5-base" # Lightweight for CPU
+    # File names for financial data
+    tsla_raw_file: str = "tsla_raw.csv"
+    bnd_raw_file: str = "bnd_raw.csv"
+    spy_raw_file: str = "spy_raw.csv"
+    combined_raw_file: str = "financial_data_raw.csv"
+
+    # Asset tickers
+    tickers: list[str] = ["TSLA", "BND", "SPY"]
+
+    # Date range
+    start_date: str = "2015-01-01"
+    end_date: str = "2026-01-15"
 
     @property
-    def raw_data_path(self) -> Path:
-        return self.raw_data_dir / self.raw_data_file
+    def tsla_raw_path(self) -> Path:
+        return self.raw_data_dir / self.tsla_raw_file
 
     @property
-    def processed_data_path(self) -> Path:
-        return self.processed_data_dir / self.processed_data_file
+    def bnd_raw_path(self) -> Path:
+        return self.raw_data_dir / self.bnd_raw_file
+
+    @property
+    def spy_raw_path(self) -> Path:
+        return self.raw_data_dir / self.spy_raw_file
+
+    @property
+    def combined_raw_path(self) -> Path:
+        return self.raw_data_dir / self.combined_raw_file
 
 
 settings = Settings()
@@ -41,8 +54,6 @@ settings = Settings()
 DATA_PATHS = {
     "raw": str(settings.raw_data_dir),
     "processed": str(settings.processed_data_dir),
-    "raw_reviews": str(settings.raw_data_path),
-    "processed_reviews": str(settings.processed_data_path),
     "figures": str(settings.figures_dir),
     "reports": str(settings.reports_dir),
 }

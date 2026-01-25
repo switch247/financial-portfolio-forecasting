@@ -55,3 +55,7 @@ except Exception:
 			_np.random.seed(seed)
 		except Exception:
 			pass
+
+# export plotter utilities if available
+
+from .plotter import Plotter
