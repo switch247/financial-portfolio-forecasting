@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     outputs_dir: Path = root_dir / "outputs"
     figures_dir: Path = outputs_dir / "figures"
     reports_dir: Path = outputs_dir / "reports"
+    models_dir: Path = outputs_dir / "models"
 
     # File names for financial data
     tsla_raw_file: str = "tsla_raw.csv"

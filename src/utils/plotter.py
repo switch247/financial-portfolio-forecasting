@@ -23,7 +23,7 @@ class Plotter:
     """
 
     def __init__(self, figures_dir: Optional[Path] = None):
-        sns.set_theme(style="whitegrid")
+        # sns.set_theme(style="whitegrid")  # Commented out due to matplotlib compatibility issues
         plt.rcParams["figure.figsize"] = (10, 6)
         self.figures_dir = Path(figures_dir) if figures_dir else settings.figures_dir
         self.figures_dir.mkdir(parents=True, exist_ok=True)
@@ -264,6 +264,71 @@ class Plotter:
             plt.savefig(out_path, dpi=300)
         plt.show()
         plt.close()
+
+    def plot_acf_pacf(self, series, lags=50, title_prefix="Time Series"):
+        """Plot ACF and PACF side by side."""
+        from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+        
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+
+        plot_acf(series.dropna(), lags=lags, ax=ax1)
+        ax1.set_title('Autocorrelation Function (ACF)')
+
+        plot_pacf(series.dropna(), lags=lags, ax=ax2)
+        ax2.set_title('Partial Autocorrelation Function (PACF)')
+
+        plt.tight_layout()
+        if title_prefix:
+            filename = f"{self._slugify(title_prefix + ' ACF PACF')}.png"
+            out_path = self.figures_dir / filename
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            plt.savefig(out_path, dpi=300)
+        plt.show()
+        plt.close()
+
+    def plot_training_history(self, history, title="Model Training History"):
+        """Plot training and validation loss curves."""
+        plt.figure(figsize=(10, 6))
+        plt.plot(history.history['loss'], label='Training Loss')
+        if 'val_loss' in history.history:
+            plt.plot(history.history['val_loss'], label='Validation Loss')
+        plt.title(title)
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend()
+        self._finalize(title, "Epoch", "Loss")
+
+    def plot_prediction_errors(self, error_dict, title="Prediction Errors", ylabel="Error"):
+        """Plot prediction errors for multiple models in subplots."""
+        n_models = len(error_dict)
+        
+        if n_models == 1:
+            fig, axes = plt.subplots(1, 1, figsize=(10, 6))
+            axes = [axes]
+        else:
+            n_cols = 2
+            n_rows = (n_models + 1) // n_cols
+            fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 6))
+            
+            if n_rows == 1:
+                axes = axes.flatten()
+            else:
+                axes = axes.flatten()
+
+        colors = ['red', 'green', 'blue', 'orange', 'purple']
+        
+        for i, (model_name, errors) in enumerate(error_dict.items()):
+            if i < len(axes):
+                ax = axes[i]
+                ax.plot(errors.index, errors.values, label=f'{model_name} Errors', color=colors[i % len(colors)])
+                ax.axhline(y=0, color='black', linestyle='--', alpha=0.5)
+                ax.set_title(f'{model_name} Prediction Errors')
+                ax.set_xlabel('Date')
+                ax.set_ylabel(ylabel)
+                ax.tick_params(axis='x', rotation=45)
+
+        plt.tight_layout()
+        self._finalize(title, None, None)
 
     def plot_multi_line_time_series(self, data_dict, title=None, xlabel="Date", ylabel=None):
         """Plot multiple time series lines on the same chart."""
