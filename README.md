@@ -21,11 +21,14 @@ As a Financial Analyst at GMF, the goal is to:
 - **Source:** YFinance Python library.
 
 ## Project Tasks
-1. **Preprocess and Explore the Data:** Extract data, clean it, perform EDA, check stationarity, calculate risk metrics (VaR, Sharpe Ratio), and visualize trends.
-2. **Build Time Series Forecasting Models:** Implement ARIMA/SARIMA and LSTM models, optimize parameters, and evaluate using MAE, RMSE, MAPE.
-3. **Forecast Future Market Trends:** Generate 6-12 month forecasts with confidence intervals, analyze trends, and assess opportunities/risks.
-4. **Optimize Portfolio Based on Forecast:** Use MPT to compute expected returns, covariance matrix, and generate the Efficient Frontier. Recommend optimal portfolios (e.g., Maximum Sharpe Ratio, Minimum Volatility).
-5. **Strategy Backtesting:** Simulate portfolio performance over a historical period (e.g., Jan 2025 - Jan 2026) and compare against a benchmark (e.g., 60% SPY / 40% BND).
+1. **Preprocess and Explore the Data:** ✅ Extract data, clean it, perform EDA, check stationarity, calculate risk metrics (VaR, Sharpe Ratio), and visualize trends.
+2. **Build Time Series Forecasting Models:** ✅ Implement ARIMA/SARIMA and LSTM models, optimize parameters, and evaluate using MAE, RMSE, MAPE.
+3. **Forecast Future Market Trends:** ✅ Generate 6-12 month forecasts with confidence intervals, analyze trends, and assess opportunities/risks.
+4. **Optimize Portfolio Based on Forecast:** ✅ Use MPT to compute expected returns, covariance matrix, and generate the Efficient Frontier. Recommend optimal portfolios (e.g., Maximum Sharpe Ratio, Minimum Volatility).
+5. **Strategy Backtesting:** ✅ Simulate portfolio performance over a historical period (e.g., Jan 2025 - Jan 2026) and compare against a benchmark (e.g., 60% SPY / 40% BND).
+
+## Current Status
+All tasks (1-5) have been completed. The project includes fully implemented notebooks for EDA, time series forecasting, future trend forecasting, portfolio optimization, and strategy backtesting. Key deliverables include trained models, forecasts, efficient frontier visualizations, portfolio recommendations, and backtesting results with performance metrics.
 
 ## Project Structure
 ```
